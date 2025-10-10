@@ -1,0 +1,39 @@
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: xiaorui-mail-backend
+    # 文件上传设置
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/xiaorui_mail
+    username: root
+    password: 123456
+# mybaits-plus配置
+mybatis-plus:
+  configuration:
+    # 驼峰命名开启
+    map-underscore-to-camel-case: true
+    # 仅在开发环境开启日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # MyBatis Mapper所对应的XML文件位置
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      # 使用数据库自增 ID 作为主键
+      id-type: AUTO
+      # 默认数据库表下划线命名
+      table-underline: true
