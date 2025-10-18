@@ -1,5 +1,7 @@
 package com.xiaorui.xiaoruimailbackend.exception;
 
+import com.xiaorui.xiaoruimailbackend.response.ResponseEnum;
+import com.xiaorui.xiaoruimailbackend.response.ServerResponseEntity;
 import lombok.Getter;
 
 /**
@@ -12,15 +14,20 @@ public class BusinessException extends RuntimeException {
     /**
      * 错误码
      */
-    private final int code;
+    private String code;
 
-    public BusinessException(int code, String message) {
-        super(message);
-        this.code = code;
-    }
+    /**
+     * 对象
+     */
+    private Object object;
+
+    /**
+     * 服务器响应实体
+     */
+    private ServerResponseEntity<?> serverResponseEntity;
 
     public BusinessException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
+        super(errorCode.getMsg());
         this.code = errorCode.getCode();
     }
 
@@ -29,4 +36,28 @@ public class BusinessException extends RuntimeException {
         this.code = errorCode.getCode();
     }
 
+    public BusinessException(ResponseEnum responseEnum) {
+        super(responseEnum.getMsg());
+        this.code = responseEnum.value();
+    }
+
+    public BusinessException(ResponseEnum responseEnum, String msg) {
+        super(msg);
+        this.code = responseEnum.value();
+    }
+
+    public BusinessException(ServerResponseEntity<?> serverResponseEntity) {
+        this.serverResponseEntity = serverResponseEntity;
+    }
+
+    public BusinessException(String msg) {
+        super(msg);
+        this.code = ResponseEnum.SHOW_FAIL.value();
+    }
+
+    public BusinessException(String msg, Object object) {
+        super(msg);
+        this.code = ResponseEnum.SHOW_FAIL.value();
+        this.object = object;
+    }
 }

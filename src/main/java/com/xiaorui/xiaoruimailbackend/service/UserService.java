@@ -11,6 +11,8 @@ import com.xiaorui.xiaoruimailbackend.model.vo.UserVO;
 */
 public interface UserService extends IService<User> {
 
+    // TODO 修改方法返回参数
+
     /**
      *  用户注册
      *
