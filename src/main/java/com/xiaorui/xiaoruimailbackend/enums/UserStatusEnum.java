@@ -3,26 +3,26 @@ package com.xiaorui.xiaoruimailbackend.enums;
 import lombok.Getter;
 
 /**
- * @description: 系统类型枚举
+ * @description: 用户状态枚举
  * @author: xiaorui
- * @date: 2025-10-18 21:02
+ * @date: 2025-10-19 16:02
  **/
 
 @Getter
-public enum SysTypeEnum {
+public enum UserStatusEnum {
     /**
-     * 普通用户系统
+     * 正常
      */
-    ORDINARY(0),
+    NORMAL(1),
 
     /**
-     * 后台
+     * 禁用
      */
-    ADMIN(1);
+    BANNED(2);
 
     private final Integer value;
 
-    SysTypeEnum(Integer value) {
+    UserStatusEnum(Integer value) {
         this.value = value;
     }
 }

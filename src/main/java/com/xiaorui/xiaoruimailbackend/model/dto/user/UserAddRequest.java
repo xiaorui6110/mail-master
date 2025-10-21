@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @description: 用户添加请求
+ * @description: 用户添加请求（可能不考虑使用）
  * @author: xiaorui
  * @date: 2025-10-14 21:17
  **/

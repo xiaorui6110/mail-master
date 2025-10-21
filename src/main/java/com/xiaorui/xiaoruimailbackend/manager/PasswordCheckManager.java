@@ -34,28 +34,28 @@ public class PasswordCheckManager {
      * 检查密码
      *
      * @param sysTypeEnum 系统类型
-     * @param userNameOrMobile 用户名或手机号
+     * @param userNameOrEmail 用户名或邮箱
      * @param rawPassword 原始密码
      * @param encodedPassword 加密密码
      */
-    public void checkPassword(SysTypeEnum sysTypeEnum, String userNameOrMobile, String rawPassword, String encodedPassword) {
+    public void checkPassword(SysTypeEnum sysTypeEnum, String userNameOrEmail, String rawPassword, String encodedPassword) {
 
-        String checkPrefix = sysTypeEnum.value() + CHECK_VALID_CODE_NUM_PREFIX + IpHelper.getIpAddr();
+        String checkPrefix = sysTypeEnum.getValue() + CHECK_VALID_CODE_NUM_PREFIX + IpHelper.getIpAddr();
 
         int count = 0;
-        if(RedisUtil.hasKey(checkPrefix + userNameOrMobile)){
-            count = RedisUtil.get(checkPrefix + userNameOrMobile);
+        if(RedisUtil.hasKey(checkPrefix + userNameOrEmail)){
+            count = RedisUtil.get(checkPrefix + userNameOrEmail);
         }
         if(count > TIMES_CHECK_INPUT_PASSWORD_NUM){
             throw new BusinessException("密码输入错误十次，已限制登录30分钟");
         }
         // 半小时后失效
-        RedisUtil.set(checkPrefix + userNameOrMobile,count, 1800);
+        RedisUtil.set(checkPrefix + userNameOrEmail,count, 1800);
         // 密码不正确
         if (StrUtil.isBlank(encodedPassword) || !passwordEncoder.matches(rawPassword, encodedPassword)){
             count++;
             // 半小时后失效
-            RedisUtil.set(checkPrefix + userNameOrMobile, count, 1800);
+            RedisUtil.set(checkPrefix + userNameOrEmail, count, 1800);
             throw new BusinessException("账号或密码不正确");
         }
     }

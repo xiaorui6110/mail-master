@@ -2,6 +2,14 @@ server:
   port: 8123
   servlet:
     context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+  tomcat:
+    max-connections: 1000
+    accept-count: 100
+    connection-timeout: 20000
 spring:
   application:
     name: xiaorui-mail-backend
@@ -20,6 +28,34 @@ spring:
     url: jdbc:mysql://localhost:3306/xiaorui_mail
     username: root
     password: 123456
+  # Redis 配置
+  data:
+    redis:
+      database: 6
+      host: 127.0.0.1
+      port: 6379
+      # Redis 密码，如果有的话
+      #password: 123456
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 100  # 最大并发连接数
+          max-idle: 8  # 最大空闲连接数
+          min-idle: 2  # 最小空闲连接数
+          max-wait: 1000
+        shutdown-timeout: 100ms
+  # Session 配置
+  session:
+    redis:
+      namespace: "xiaorui:session" # 定义存储在 Redis 中的 session 数据的命名空间
+      flush-mode: on_save  # 每次保存或更新 session 时立即将数据同步到 Redis
+      save-mode: always  # 每次请求结束时都保存 session
+  # 邮箱配置
+  mail:
+    from: 368649957@qq.com  # 发件人邮箱
+    password: ozxbkjocwsaicbag  # 邮箱授权码
+    host: smtp.qq.com  # SMTP服务器地址
+    port: 465  # SMTP服务器端口
 # mybaits-plus配置
 mybatis-plus:
   configuration:
