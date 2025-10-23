@@ -6,7 +6,7 @@ package com.xiaorui.xiaoruimailbackend.exception;
  * @date: 2025-10-10 20:37
  **/
 
-public class ThrowUtils {
+public class ThrowUtil {
     /**
      * 条件成立则抛异常
      *

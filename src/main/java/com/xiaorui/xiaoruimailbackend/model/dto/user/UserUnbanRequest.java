@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @description: 用户解封/封禁请求
+ * @description: 用户解封/封禁请求（管理员后台的功能，这里不做实现）
  * @author: xiaorui
  * @date: 2025-10-14 21:19
  **/

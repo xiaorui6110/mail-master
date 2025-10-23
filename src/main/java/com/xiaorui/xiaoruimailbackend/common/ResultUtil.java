@@ -1,5 +1,6 @@
 package com.xiaorui.xiaoruimailbackend.common;
 
+import com.xiaorui.xiaoruimailbackend.common.BaseResponse;
 import com.xiaorui.xiaoruimailbackend.exception.ErrorCode;
 
 /**
@@ -8,7 +9,7 @@ import com.xiaorui.xiaoruimailbackend.exception.ErrorCode;
  * @date: 2025-10-10 20:43
  **/
 
-public class ResultUtils {
+public class ResultUtil {
     /**
      * 成功
      *

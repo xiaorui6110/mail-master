@@ -38,12 +38,12 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(ResponseEnum responseEnum) {
         super(responseEnum.getMsg());
-        this.code = responseEnum.value();
+        this.code = responseEnum.getValue();
     }
 
     public BusinessException(ResponseEnum responseEnum, String msg) {
         super(msg);
-        this.code = responseEnum.value();
+        this.code = responseEnum.getValue();
     }
 
     public BusinessException(ServerResponseEntity<?> serverResponseEntity) {
@@ -52,12 +52,12 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String msg) {
         super(msg);
-        this.code = ResponseEnum.SHOW_FAIL.value();
+        this.code = ResponseEnum.SHOW_FAIL.getValue();
     }
 
     public BusinessException(String msg, Object object) {
         super(msg);
-        this.code = ResponseEnum.SHOW_FAIL.value();
+        this.code = ResponseEnum.SHOW_FAIL.getValue();
         this.object = object;
     }
 }

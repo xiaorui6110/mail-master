@@ -48,7 +48,7 @@ public class UserInfoInTokenBO {
     private Set<String> perms;
 
     /**
-     * 状态 1 正常 0 无效
+     * 状态 1-正常 0-无效
      */
     private Boolean enabled;
 

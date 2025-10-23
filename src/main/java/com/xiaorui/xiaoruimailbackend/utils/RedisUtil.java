@@ -18,12 +18,12 @@ public class RedisUtil {
     /**
      * 获取 redisTemplate
      */
-    private static RedisTemplate<String, Object> redisTemplate = SpringContextUtils.getBean("redisTemplate", RedisTemplate.class);
+    private static RedisTemplate<String, Object> redisTemplate = SpringContextUtil.getBean("redisTemplate", RedisTemplate.class);
 
     /**
      * 获取 stringRedisTemplate
      */
-    public static final StringRedisTemplate STRING_REDIS_TEMPLATE = SpringContextUtils.getBean("stringRedisTemplate", StringRedisTemplate.class);
+    public static final StringRedisTemplate STRING_REDIS_TEMPLATE = SpringContextUtil.getBean("stringRedisTemplate", StringRedisTemplate.class);
 
     //============================= common ============================
 

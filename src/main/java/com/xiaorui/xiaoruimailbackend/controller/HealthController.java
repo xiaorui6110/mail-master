@@ -1,7 +1,7 @@
 package com.xiaorui.xiaoruimailbackend.controller;
 
 import com.xiaorui.xiaoruimailbackend.common.BaseResponse;
-import com.xiaorui.xiaoruimailbackend.common.ResultUtils;
+import com.xiaorui.xiaoruimailbackend.common.ResultUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public class HealthController {
      */
     @GetMapping("/health")
     public BaseResponse<String> health() {
-        return ResultUtils.success("ok");
+        return ResultUtil.success("ok");
     }
 
 }

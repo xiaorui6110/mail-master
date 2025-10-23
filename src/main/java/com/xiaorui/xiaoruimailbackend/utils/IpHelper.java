@@ -15,7 +15,7 @@ public class IpHelper {
      * 得到用户的真实地址,如果有多个就取第一个
      */
     public static String getIpAddr() {
-        HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         if (request == null) {
             return null;
         }

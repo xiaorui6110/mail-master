@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @date: 2025-10-14 21:16
  **/
 @Data
-public class UserUpdateRequest implements Serializable {
+public class UserUpdateInfoRequest implements Serializable {
 
     private static final long serialVersionUID = 3551892461806128940L;
     /**

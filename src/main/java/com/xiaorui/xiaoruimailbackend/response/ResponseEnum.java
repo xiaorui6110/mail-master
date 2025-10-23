@@ -7,7 +7,6 @@ import lombok.Getter;
  * @author: xiaorui
  * @date: 2025-10-18 16:44
  **/
-
 public enum ResponseEnum {
 
     /**
@@ -51,7 +50,7 @@ public enum ResponseEnum {
     @Getter
     private final String msg;
 
-    public String value() {
+    public String getValue() {
         return code;
     }
 

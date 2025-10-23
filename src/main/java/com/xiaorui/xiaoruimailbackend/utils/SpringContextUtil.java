@@ -1,6 +1,5 @@
 package com.xiaorui.xiaoruimailbackend.utils;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,14 +11,14 @@ import org.springframework.stereotype.Component;
  * @date: 2025-10-18 20:47
  **/
 @Component
-public class SpringContextUtils implements ApplicationContextAware {
+public class SpringContextUtil implements ApplicationContextAware {
 
     public static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
-        SpringContextUtils.applicationContext = applicationContext;
+        SpringContextUtil.applicationContext = applicationContext;
     }
 
     public static Object getBean(String name) {

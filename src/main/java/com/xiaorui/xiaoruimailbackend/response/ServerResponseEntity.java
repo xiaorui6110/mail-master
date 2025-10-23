@@ -50,11 +50,11 @@ public class ServerResponseEntity<T> implements Serializable {
     }
 
     public boolean isSuccess() {
-        return Objects.equals(ResponseEnum.OK.value(), this.code);
+        return Objects.equals(ResponseEnum.OK.getValue(), this.code);
     }
 
     public boolean isFail() {
-        return !Objects.equals(ResponseEnum.OK.value(), this.code);
+        return !Objects.equals(ResponseEnum.OK.getValue(), this.code);
     }
 
     public ServerResponseEntity() {
@@ -68,13 +68,13 @@ public class ServerResponseEntity<T> implements Serializable {
     public static <T> ServerResponseEntity<T> success(T data) {
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
         serverResponseEntity.setData(data);
-        serverResponseEntity.setCode(ResponseEnum.OK.value());
+        serverResponseEntity.setCode(ResponseEnum.OK.getValue());
         return serverResponseEntity;
     }
 
     public static <T> ServerResponseEntity<T> success() {
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
-        serverResponseEntity.setCode(ResponseEnum.OK.value());
+        serverResponseEntity.setCode(ResponseEnum.OK.getValue());
         serverResponseEntity.setMsg(ResponseEnum.OK.getMsg());
         return serverResponseEntity;
     }
@@ -90,7 +90,7 @@ public class ServerResponseEntity<T> implements Serializable {
         log.error(msg);
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
         serverResponseEntity.setMsg(msg);
-        serverResponseEntity.setCode(ResponseEnum.SHOW_FAIL.value());
+        serverResponseEntity.setCode(ResponseEnum.SHOW_FAIL.getValue());
         return serverResponseEntity;
     }
 
@@ -98,7 +98,7 @@ public class ServerResponseEntity<T> implements Serializable {
         log.error(responseEnum.toString());
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
         serverResponseEntity.setMsg(responseEnum.getMsg());
-        serverResponseEntity.setCode(responseEnum.value());
+        serverResponseEntity.setCode(responseEnum.getValue());
         return serverResponseEntity;
     }
 
@@ -106,7 +106,7 @@ public class ServerResponseEntity<T> implements Serializable {
         log.error(responseEnum.toString());
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
         serverResponseEntity.setMsg(responseEnum.getMsg());
-        serverResponseEntity.setCode(responseEnum.value());
+        serverResponseEntity.setCode(responseEnum.getValue());
         serverResponseEntity.setData(data);
         return serverResponseEntity;
     }
