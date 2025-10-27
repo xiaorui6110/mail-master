@@ -16,9 +16,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 public class User implements Serializable {
     /**
-     * 用户id
+     * 用户id（修改 id 生成的策略为 ASSIGN_ID 雪花算法）
      */
-    @TableId(type = IdType.INPUT)
+    @TableId(type = IdType.ASSIGN_ID)
     private String userId;
 
     /**

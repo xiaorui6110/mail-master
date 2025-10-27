@@ -82,11 +82,11 @@
             <version>5.8.35</version>
         </dependency>
         <!-- Redisson 集成分布式锁等    https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.44.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.redisson</groupId>-->
+<!--            <artifactId>redisson-spring-boot-starter</artifactId>-->
+<!--            <version>3.44.0</version>-->
+<!--        </dependency>-->
         <!-- Knife4j 接口文档    https://mvnrepository.com/artifact/com.github.xiaoymin/knife4j-openapi3-jakarta-spring-boot-starter -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>

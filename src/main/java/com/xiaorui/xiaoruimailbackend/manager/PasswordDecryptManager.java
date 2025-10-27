@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @description: 密码解密管理（前端在传输时使用AES加密，后端先使用AES解密，再进行处理）
+ * @description: 密码解密管理（前端在传输时使用AES加密，后端先使用AES解密，再进行处理（暂时作废））（暂时先是前端使用明文传输，后端使用BCrypt加密）
  * @author: xiaorui
  * @date: 2025-10-18 17:21
  **/
-@Component
+//@Component
 public class PasswordDecryptManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(PasswordDecryptManager.class);
+    //private static final Logger logger = LoggerFactory.getLogger(PasswordDecryptManager.class);
     /**
      * 用于aes签名的key，16位
      */
@@ -39,7 +39,7 @@ public class PasswordDecryptManager {
             decryptStr = aes.decryptStr(data);
             decryptPassword = decryptStr.substring(13);
         } catch (Exception e) {
-            logger.error("Exception:", e);
+            //logger.error("Exception:", e);
             throw new BusinessException("AES 解密错误", e);
 
         }

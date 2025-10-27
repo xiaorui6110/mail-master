@@ -11,8 +11,7 @@ import com.xiaorui.xiaoruimailbackend.model.bo.TokenInfoBO;
 import com.xiaorui.xiaoruimailbackend.model.bo.UserInfoInTokenBO;
 import com.xiaorui.xiaoruimailbackend.model.vo.TokenInfoVO;
 import com.xiaorui.xiaoruimailbackend.response.ResponseEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author: xiaorui
  * @date: 2025-10-21 16:57
  **/
+@Slf4j
 @Component
 public class TokenStoreManager {
 
@@ -34,17 +34,18 @@ public class TokenStoreManager {
 
     public TokenStoreManager(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
+        log.info("RedisTemplate injected successfully: {}", redisTemplate != null);
     }
 
     /**
      * 以Sa-Token技术生成token，并返回token信息
-     * @param userInfoInToken 用户信息
+     * @param userInfoInTokenBO 用户信息
      * @return token信息
      */
-    public TokenInfoBO storeAccessSaToken(UserInfoInTokenBO userInfoInToken) {
+    public TokenInfoBO storeAccessSaToken(UserInfoInTokenBO userInfoInTokenBO) {
         // token生成
-        String uid = this.getUid(userInfoInToken.getSysType().toString(), userInfoInToken.getUserId());
-        int timeoutSecond = getExpiresTime(userInfoInToken.getSysType());
+        String uid = this.getUid(userInfoInTokenBO.getSysType().toString(), userInfoInTokenBO.getUserId());
+        int timeoutSecond = getExpiresTime(userInfoInTokenBO.getSysType());
         StpUtil.login(uid, timeoutSecond);
         String token = StpUtil.getTokenValue();
         // 用户信息存入缓存
@@ -52,16 +53,19 @@ public class TokenStoreManager {
         redisTemplate.delete(keyName);
         redisTemplate.opsForValue().set(
                 keyName,
-                JSON.toJSONString(userInfoInToken),
+                JSON.toJSONString(userInfoInTokenBO),
                 timeoutSecond,
                 TimeUnit.SECONDS
         );
+        log.info("用户信息已存储到 Redis: {}", keyName);
         // 数据封装返回(token不用加密)
         TokenInfoBO tokenInfoBO = new TokenInfoBO();
-        tokenInfoBO.setUserInfoInToken(userInfoInToken);
+        tokenInfoBO.setUserInfoInToken(userInfoInTokenBO);
         tokenInfoBO.setExpiresTime(timeoutSecond);
         tokenInfoBO.setAccessToken(token);
         tokenInfoBO.setRefreshToken(token);
+        log.info("userInfoInTokenBO信息: {}", userInfoInTokenBO);
+        log.info("tokenInfoBO信息: {}", tokenInfoBO);
         return tokenInfoBO;
     }
 
@@ -138,15 +142,15 @@ public class TokenStoreManager {
 
     /**
      * 生成token，并返回token展示信息
-     * @param userInfoInToken 用户信息
+     * @param userInfoInTokenBO 用户信息
      * @return token展示信息
      */
-    public TokenInfoVO storeAndGetVo(UserInfoInTokenBO userInfoInToken) {
-        if (!userInfoInToken.getEnabled()){
+    public TokenInfoVO storeAndGetVo(UserInfoInTokenBO userInfoInTokenBO) {
+        if (!userInfoInTokenBO.getEnabled()){
             // 用户已禁用，请联系客服
             throw new BusinessException("用户已禁用，请联系客服");
         }
-        TokenInfoBO tokenInfoBO = storeAccessSaToken(userInfoInToken);
+        TokenInfoBO tokenInfoBO = storeAccessSaToken(userInfoInTokenBO);
         // 数据封装返回
         TokenInfoVO tokenInfoVO = new TokenInfoVO();
         tokenInfoVO.setAccessToken(tokenInfoBO.getAccessToken());

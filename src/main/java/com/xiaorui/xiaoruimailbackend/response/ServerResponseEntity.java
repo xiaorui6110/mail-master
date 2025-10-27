@@ -1,5 +1,6 @@
 package com.xiaorui.xiaoruimailbackend.response;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +36,7 @@ public class ServerResponseEntity<T> implements Serializable {
     private String version;
 
     /**
-     * 时间
+     * 时间戳
      */
     private Long timestamp;
 
@@ -60,6 +61,10 @@ public class ServerResponseEntity<T> implements Serializable {
     public ServerResponseEntity() {
         // 版本号
         this.version = "xiaorui-mail-001";
+        // 时间戳
+        this.timestamp = System.currentTimeMillis();
+        // 签名
+        this.sign = "xiaorui";
     }
 
     // region
@@ -68,6 +73,7 @@ public class ServerResponseEntity<T> implements Serializable {
     public static <T> ServerResponseEntity<T> success(T data) {
         ServerResponseEntity<T> serverResponseEntity = new ServerResponseEntity<>();
         serverResponseEntity.setData(data);
+        serverResponseEntity.setMsg(ResponseEnum.OK.getMsg());
         serverResponseEntity.setCode(ResponseEnum.OK.getValue());
         return serverResponseEntity;
     }

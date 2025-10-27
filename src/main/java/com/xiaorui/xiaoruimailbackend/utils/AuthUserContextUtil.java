@@ -8,11 +8,13 @@ import com.xiaorui.xiaoruimailbackend.model.bo.UserInfoInTokenBO;
  * @author: xiaorui
  * @date: 2025-10-22 15:16
  **/
+
 public class AuthUserContextUtil {
 
     private static final ThreadLocal<UserInfoInTokenBO> USER_INFO_IN_TOKEN_HOLDER = new TransmittableThreadLocal<>();
 
     public static UserInfoInTokenBO get() {
+
         return USER_INFO_IN_TOKEN_HOLDER.get();
     }
 

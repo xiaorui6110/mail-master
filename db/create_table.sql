@@ -16,7 +16,7 @@ create table `xr_user`
     `pay_password`   varchar(50)          default null comment '支付密码',
     `user_phone`     varchar(50)          default null comment '用户手机号',
     `user_avatar`    varchar(255)         default null comment '用户头像',
-    `user_sex`       char(1)              default 'm' comment '用户性别 m-男 f-女',
+    `user_sex`       char(1)              default null comment '用户性别 m-男 f-女',
     `user_birthday`  char(10)             default null comment '用户生日 yyyy-mm-dd',
     `user_profile`   varchar(500)         default null comment '用户备注',
     `user_status`    tinyint(4)           default '1' comment '用户状态 1-正常 2-禁用',

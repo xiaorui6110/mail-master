@@ -5,6 +5,7 @@ import com.xiaorui.xiaoruimailbackend.model.dto.user.UserQueryRequest;
 import com.xiaorui.xiaoruimailbackend.model.dto.user.UserUpdateInfoRequest;
 import com.xiaorui.xiaoruimailbackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xiaorui.xiaoruimailbackend.model.vo.TokenInfoVO;
 import com.xiaorui.xiaoruimailbackend.model.vo.UserVO;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -35,7 +36,7 @@ public interface UserService extends IService<User> {
      * @param loginPassword   登录密码
      * @return 用户信息vo
      */
-    UserVO userLogin(String userEmail, String loginPassword);
+    TokenInfoVO userLogin(String userEmail, String loginPassword);
 
     /**
      * 发送邮箱验证码

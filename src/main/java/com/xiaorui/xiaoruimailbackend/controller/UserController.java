@@ -8,18 +8,17 @@ import com.xiaorui.xiaoruimailbackend.exception.ErrorCode;
 import com.xiaorui.xiaoruimailbackend.exception.ThrowUtil;
 import com.xiaorui.xiaoruimailbackend.model.dto.user.*;
 import com.xiaorui.xiaoruimailbackend.model.entity.User;
+import com.xiaorui.xiaoruimailbackend.model.vo.TokenInfoVO;
 import com.xiaorui.xiaoruimailbackend.model.vo.UserVO;
 import com.xiaorui.xiaoruimailbackend.response.ServerResponseEntity;
 import com.xiaorui.xiaoruimailbackend.service.UserService;
 import com.xiaorui.xiaoruimailbackend.utils.SecurityUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,7 @@ public class UserController {
      * 用户登录（邮箱 + 密码）
      */
     @PostMapping("/login")
-    public ServerResponseEntity<UserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest) {
+    public ServerResponseEntity<TokenInfoVO> userLogin(@RequestBody UserLoginRequest userLoginRequest) {
         ThrowUtil.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR, "参数不能为空");
         String userEmail = userLoginRequest.getUserEmail();
         String loginPassword = userLoginRequest.getLoginPassword();
@@ -66,8 +65,8 @@ public class UserController {
         // 校验图形数字验证码（从登录逻辑中抽离出来了）
         boolean result = userService.checkPictureVerifyCode(verifyCode, serverVerifyCode);
         ThrowUtil.throwIf(!result, ErrorCode.PARAMS_ERROR, "验证码错误");
-        UserVO userVO = userService.userLogin(userEmail, loginPassword);
-        return ServerResponseEntity.success(userVO);
+        TokenInfoVO tokenInfoVO = userService.userLogin(userEmail, loginPassword);
+        return ServerResponseEntity.success(tokenInfoVO);
     }
 
     /**
@@ -85,7 +84,7 @@ public class UserController {
     /**
      * 获取图形验证码（直接展示在前端）
      */
-    @PostMapping("/getPictureVerifyCode")
+    @GetMapping("/getPictureVerifyCode")
     public ServerResponseEntity<Map<String, String>> getPictureVerifyCode() {
         Map<String, String> pictureVerifyCode = userService.getPictureVerifyCode();
         return ServerResponseEntity.success(pictureVerifyCode);
@@ -94,7 +93,7 @@ public class UserController {
     /**
      * 获取用户信息（只能查看自己的个人信息）
      */
-    @PostMapping("/getInfo")
+    @GetMapping("/getInfo")
     public ServerResponseEntity<UserVO> getUserInfo() {
         return ServerResponseEntity.success(userService.getUserInfo());
     }

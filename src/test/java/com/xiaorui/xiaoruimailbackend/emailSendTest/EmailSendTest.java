@@ -17,7 +17,7 @@ public class EmailSendTest {
     private EmailSenderUtil emailSenderUtil;
 
     // 测试邮箱（替换为实际可接收邮件的地址）
-    private static final String TEST_TO_EMAIL = "shenrui6110@outlook.com";
+    private static final String TEST_TO_EMAIL = "368649957@qq.com";
 
     /**
      * 测试发送验证码邮件

@@ -17,7 +17,6 @@ import com.xiaorui.xiaoruimailbackend.exception.BusinessException;
 import com.xiaorui.xiaoruimailbackend.exception.ErrorCode;
 import com.xiaorui.xiaoruimailbackend.exception.ThrowUtil;
 import com.xiaorui.xiaoruimailbackend.manager.PasswordCheckManager;
-import com.xiaorui.xiaoruimailbackend.manager.PasswordDecryptManager;
 import com.xiaorui.xiaoruimailbackend.manager.TokenStoreManager;
 import com.xiaorui.xiaoruimailbackend.model.bo.UserInfoInTokenBO;
 import com.xiaorui.xiaoruimailbackend.model.dto.user.UserQueryRequest;
@@ -31,6 +30,7 @@ import com.xiaorui.xiaoruimailbackend.utils.PrincipalUtil;
 import com.xiaorui.xiaoruimailbackend.utils.SecurityUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 * @description 针对表【xr_user(用户表)】的数据库操作Service实现
 * @createDate 2025-10-14 20:25:46
 */
+@Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
@@ -61,9 +62,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
-    @Resource
-    private PasswordDecryptManager passwordDecryptManager;
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -113,19 +111,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 检查邮箱是否已被注册
         synchronized (userEmail.intern()) {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userEmail", userEmail);
+            queryWrapper.eq("user_email", userEmail);
             long count = this.baseMapper.selectCount(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR,"该邮箱已被注册");
             }
             // 注册用户信息
             User user = new User();
-            user.setUserId(IdUtil.simpleUUID());
             user.setNickName(userEmail.substring(0, userEmail.indexOf("@")));
             user.setUserEmail(userEmail);
-            // 先解密再加密存储到数据库（用户输入密码传输到后端的过程中，密码是使用AES加密的，之后先解密再使用BCrypt加密存储）
+            // TODO （暂时作废）先解密再加密存储到数据库（用户输入密码传输到后端的过程中，密码是使用AES加密的，之后先解密再使用BCrypt加密存储）
+            // 修改一下密码加密过程：前端暂时使用明文传输，后端加密存储。修改密码加密方式，使用BCrypt加密，
             // Spring Security 5.x 及以上版本: passwordEncoder.encode() 默认使用 BCryptPasswordEncoder
-            user.setLoginPassword(passwordEncoder.encode(passwordDecryptManager.decryptPassword(loginPassword)));
+            user.setLoginPassword(passwordEncoder.encode((loginPassword)));
             user.setUserStatus(UserStatusEnum.NORMAL.getValue());
             user.setCreateTime(new Date());
             user.setUpdateTime(new Date());
@@ -149,7 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return  用户信息vo
      */
     @Override
-    public UserVO userLogin(String userEmail, String loginPassword) {
+    public TokenInfoVO userLogin(String userEmail, String loginPassword) {
         // 校验数据
         if (StrUtil.hasBlank(userEmail, loginPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求参数为空");
@@ -171,20 +169,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户不存在");
         }
-        // 输入密码先解密再加密，用于登录查询
-        String decryptPassword = passwordDecryptManager.decryptPassword(loginPassword);
+        // TODO （暂时作废）输入密码先解密再加密，用于登录查询
         // 半小时内密码输入错误十次，已限制登录30分钟
-        passwordCheckManager.checkPassword(SysTypeEnum.ORDINARY, user.getNickName(), decryptPassword, user.getLoginPassword());
+        passwordCheckManager.checkPassword(SysTypeEnum.ORDINARY, user.getUserEmail(), loginPassword, user.getLoginPassword());
         // 将用户信息存储到token中
-        UserInfoInTokenBO userInfoInToken = new UserInfoInTokenBO();
-        userInfoInToken.setUserId(user.getUserId());
-        userInfoInToken.setSysType(SysTypeEnum.ORDINARY.getValue());
-        userInfoInToken.setEnabled(user.getUserStatus() == 1);
-        // 存储token（暂时考虑不需要返回tokenVO）
-        TokenInfoVO tokenInfoVO = tokenStoreManager.storeAndGetVo(userInfoInToken);
-        UserVO userVO = new UserVO();
-        BeanUtil.copyProperties(user, userVO);
-        return userVO;
+        UserInfoInTokenBO userInfoInTokenBO = new UserInfoInTokenBO();
+        userInfoInTokenBO.setUserId(user.getUserId());
+        userInfoInTokenBO.setSysType(SysTypeEnum.ORDINARY.getValue());
+        userInfoInTokenBO.setEnabled(user.getUserStatus() == 1);
+        // 存储token并返回vo
+        TokenInfoVO tokenInfoVO = tokenStoreManager.storeAndGetVo(userInfoInTokenBO);
+        return tokenInfoVO;
     }
 
 
@@ -200,8 +195,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (StrUtil.hasBlank(userEmail, type)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"请求参数为空");
         }
-        // TODO 检测高频操作
-
         // 检查邮箱格式
         if (!userEmail.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"邮箱格式错误");
@@ -241,7 +234,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
 
     /**
-     * 获取图形验证码（使用HutoolUtil生成
+     * 获取图形验证码（使用HutoolUtil生成）
      * <a href="https://doc.hutool.cn/pages/captcha">...</a>）
      *
      * @return 图形验证码
@@ -260,13 +253,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         byte[] captchaBytes = outputStream.toByteArray();
         String base64Captcha = Base64.getEncoder().encodeToString(captchaBytes);
         String captchaCode = shearCaptcha.getCode();
-        // 使用Hutool的MD5加密
-        String encryptedCaptcha = DigestUtil.md5Hex(captchaCode);
+        // TODO 使用Hutool的MD5加密（为了检查接口方便，先不加密）
+        //String encryptedCaptcha = DigestUtil.md5Hex(captchaCode);
         // 将加密后的验证码和Base64编码的图片存储到Redis中，设置过期时间为5分钟
-        stringRedisTemplate.opsForValue().set("captcha:" + encryptedCaptcha, captchaCode, 300, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set("captcha:" + captchaCode, captchaCode, 300, TimeUnit.SECONDS);
         Map<String, String> data = new HashMap<>();
         data.put("base64Captcha", base64Captcha);
-        data.put("encryptedCaptcha", encryptedCaptcha);
+        data.put("encryptedCaptcha", captchaCode);
         return data;
     }
 
@@ -281,9 +274,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public boolean checkPictureVerifyCode(String verifyCode, String serverVerifyCode) {
         if (verifyCode != null && serverVerifyCode != null) {
-            // 对用户输入的验证码进行MD5加密，然后与服务器存储的验证码进行比较（服务器中的存储的是MD5加密后的验证码）
-            String encryptedVerifycode = DigestUtil.md5Hex(verifyCode);
-            if (encryptedVerifycode.equals(serverVerifyCode)) {
+            // TODO 对用户输入的验证码进行MD5加密，然后与服务器存储的验证码进行比较（服务器中的存储的是MD5加密后的验证码）(也是先不加密)
+            //String encryptedVerifycode = DigestUtil.md5Hex(verifyCode);
+            if (verifyCode.equals(serverVerifyCode)) {
                 return true;
             }
         }
@@ -308,8 +301,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String sortOrder = userQueryRequest.getSortOrder();
         // 构造查询条件
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(StrUtil.isNotBlank(userId), "userId", userId);
-        queryWrapper.eq(StrUtil.isNotBlank(nickName), "nickName", nickName);
+        queryWrapper.eq(StrUtil.isNotBlank(userId), "user_id", userId);
+        queryWrapper.eq(StrUtil.isNotBlank(nickName), "nick_name", nickName);
         queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), "ascend".equals(sortOrder), sortField);
         return queryWrapper;
     }
@@ -382,7 +375,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 检查新邮箱是否已被使用
         synchronized (newUserEmail.intern()) {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userEmail", newUserEmail);
+            queryWrapper.eq("user_email", newUserEmail);
             long count = this.baseMapper.selectCount(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR,"邮箱已被使用");
@@ -433,10 +426,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"用户不存在");
         }
-        // 将新密码解密再加密
-        String decryptPassword = passwordDecryptManager.decryptPassword(newPassword);
-        String encryptPassword = passwordEncoder.encode(decryptPassword);
-        if (StrUtil.equals(encryptPassword, loginUser.getLoginPassword())) {
+        // TODO（暂时作废）将新密码解密再加密
+        String encryptPassword = passwordEncoder.encode(newPassword);
+        log.info("加密后的新密码为：{}",encryptPassword);
+        log.info("加密后的旧密码为：{}",loginUser.getLoginPassword());
+        if (passwordEncoder.matches(newPassword,loginUser.getLoginPassword())) {
             // 新密码不能与原密码相同
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"新密码不能与原密码相同");
         }
@@ -490,9 +484,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"用户不存在");
         }
-        // 解密并加密密码
-        String decryptPassword = passwordDecryptManager.decryptPassword(newPassword);
-        String encryptPassword = passwordEncoder.encode(decryptPassword);
+        // （暂时作废）解密并加密密码
+        String encryptPassword = passwordEncoder.encode(newPassword);
         // 重置密码
         loginUser.setLoginPassword(encryptPassword);
         loginUser.setUpdateTime(new Date());

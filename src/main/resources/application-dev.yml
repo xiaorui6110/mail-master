@@ -29,21 +29,12 @@ spring:
     username: root
     password: 123456
   # Redis 配置
-  data:
-    redis:
-      database: 6
-      host: 127.0.0.1
-      port: 6379
-      # Redis 密码，如果有的话
-      #password: 123456
-      timeout: 5000
-      lettuce:
-        pool:
-          max-active: 100  # 最大并发连接数
-          max-idle: 8  # 最大空闲连接数
-          min-idle: 2  # 最小空闲连接数
-          max-wait: 1000
-        shutdown-timeout: 100ms
+  redis:
+    database: 6
+    host: 127.0.0.1
+    port: 6379
+    # Redis 密码，如果有的话
+    #password: 123456
   # Session 配置
   session:
     redis:
@@ -56,6 +47,10 @@ spring:
     password: ozxbkjocwsaicbag  # 邮箱授权码
     host: smtp.qq.com  # SMTP服务器地址
     port: 465  # SMTP服务器端口
+  security:
+    user:
+      name: xiaorui
+      password: 123456
 # mybaits-plus配置
 mybatis-plus:
   configuration:

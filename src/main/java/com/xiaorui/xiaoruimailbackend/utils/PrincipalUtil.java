@@ -19,7 +19,7 @@ public class PrincipalUtil {
     /**
      * 邮箱正则表达式（邮箱）
      */
-    public static final String EMAIL_REGEXP = "\\^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$";
+    public static final String EMAIL_REGEXP = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
 
     /**
      * 数字字母下划线 4-16位（用户昵称）
